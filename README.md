@@ -46,7 +46,7 @@ The architecture follows **immutable infrastructure principles**, meaning infras
 
 ## Architecture Diagram
 
-
+```
 Developer
    │
    ▼
@@ -69,16 +69,14 @@ GitHub Actions CI/CD Pipeline
       └── Linux Virtual Machine
                 │
                 ▼
-        Cloud-init (Auto Setup)
+         Cloud-init (Auto Setup)
                 │
                 ▼
-         Docker Container Running App
+        Docker Container Running App
                 │
                 ▼
            Publicly Accessible Application
-
----
-
+```
 ## Objective
 
 The goal of this project is to demonstrate practical DevOps skills by combining cloud infrastructure automation, containerization, and CI/CD into a single streamlined pipeline.
