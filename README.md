@@ -101,3 +101,30 @@ The architecture follows **immutable infrastructure principles**, meaning infras
 ## Objective
 
 The goal of this project is to demonstrate practical DevOps skills by combining cloud infrastructure automation, containerization, and CI/CD into a single streamlined pipeline.
+
+---
+
+## Engineering Highlights
+
+- Built and managed cloud infrastructure entirely through Terraform configuration files  
+- Developed an automated CI/CD pipeline using GitHub Actions to streamline deployments  
+- Followed immutable infrastructure practices to prevent configuration drift  
+- Configured automated VM initialization with cloud-init scripts  
+- Integrated Docker image build and deployment into the infrastructure workflow  
+- Enabled complete environment lifecycle management using `terraform apply` and `terraform destroy`  
+- Protected sensitive configuration data using encrypted GitHub repository secrets  
+- Created a seamless automation flow from source code push to live deployment  
+
+---
+
+## DevOps Principles Applied
+
+- Infrastructure as Code (IaC)  
+- Continuous Integration and Continuous Deployment  
+- Azure Cloud Networking and Resource Architecture  
+- Immutable Deployment Strategy  
+- Container-Based Application Delivery  
+- Automated Infrastructure Provisioning  
+- Cloud Resource Lifecycle and State Management  
+
+---
