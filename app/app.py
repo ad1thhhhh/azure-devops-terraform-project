@@ -1,4 +1,4 @@
-# Auto deploy test
+# Auto deployed test
 from flask import Flask
 
 app = Flask(__name__)
