@@ -63,6 +63,17 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
+            # Install Docker if not installed
+            if ! command -v docker &> /dev/null
+            then
+              echo "Installing Docker..."
+              sudo apt update -y
+              sudo apt install -y docker.io
+              sudo systemctl enable docker
+              sudo systemctl start docker
+              sudo usermod -aG docker adithravi
+            fi
+
             docker pull adithravi/networking-app:${{ github.sha }}
             docker stop networking-container || true
             docker rm networking-container || true
