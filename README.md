@@ -44,53 +44,59 @@ The architecture follows **immutable infrastructure principles**, meaning infras
 
 ---
 
-## Architecture Diagram
+## System Architecture
 
 ```
-┌───────────────────────────────┐
-│          Developer            │
-└───────────────┬───────────────┘
-                │  Git Push
-                ▼
-┌───────────────────────────────┐
-│     GitHub Repository         │
-│        (main branch)          │
-└───────────────┬───────────────┘
-                │  Triggers
-                ▼
-┌──────────────────────────────────────────┐
-│        GitHub Actions CI/CD             │
-│------------------------------------------│
-│  • Build Docker Image                   │
-│  • Push Image to DockerHub              │
-│  • Terraform Init / Plan / Apply        │
-└───────────────┬──────────────────────────┘
-                │
-                ▼
-┌──────────────────────────────────────────┐
-│          Microsoft Azure Cloud          │
-│------------------------------------------│
-│  • Resource Group                       │
-│  • Virtual Network                      │
-│  • Subnet                               │
-│  • Network Security Group               │
-│  • Public IP                            │
-│  • Linux Virtual Machine                │
-└───────────────┬──────────────────────────┘
-                │  cloud-init
-                ▼
-┌───────────────────────────────┐
-│     Docker Engine on VM      │
-│  • Pull latest image         │
-│  • Run container             │
-└───────────────┬───────────────┘
-                │
-                ▼
-┌───────────────────────────────┐
-│   Publicly Accessible App    │
-│     http://<public-ip>       │
-└───────────────────────────────┘
+                    ┌────────────────────────────┐
+                    │        Developer           │
+                    │        Code Commit         │
+                    └─────────────┬──────────────┘
+                                  │
+                                  ▼
+                    ┌────────────────────────────┐
+                    │      GitHub Repository     │
+                    │        (main branch)       │
+                    └─────────────┬──────────────┘
+                                  │  Webhook Trigger
+                                  ▼
+┌────────────────────────────────────────────────────────────────┐
+│                    GitHub Actions Pipeline                     │
+│----------------------------------------------------------------│
+│  1. Checkout Source Code                                       │
+│  2. Build Docker Image                                         │
+│  3. Push Image to DockerHub                                    │
+│  4. Authenticate with Azure (OIDC / Service Principal)         │
+│  5. Terraform Init → Plan → Apply                              │
+└─────────────┬──────────────────────────────────────────────────┘
+              │
+              ▼
+┌────────────────────────────────────────────────────────────────┐
+│                         Microsoft Azure                        │
+│----------------------------------------------------------------│
+│  Resource Group                                                │
+│    ├── Virtual Network                                         │
+│    ├── Subnet                                                  │
+│    ├── Network Security Group                                  │
+│    ├── Public IP                                               │
+│    └── Linux Virtual Machine                                   │
+└─────────────┬──────────────────────────────────────────────────┘
+              │  cloud-init provisioning
+              ▼
+┌────────────────────────────────────────────────────────────────┐
+│                     Virtual Machine Runtime                    │
+│----------------------------------------------------------------│
+│  • Install Docker Engine                                       │
+│  • Pull latest container image                                 │
+│  • Run container (port mapping 80:5000)                        │
+└─────────────┬──────────────────────────────────────────────────┘
+              │
+              ▼
+┌────────────────────────────────────────────────────────────────┐
+│                 Publicly Accessible Application                │
+│                 http://<vm-public-ip>                          │
+└────────────────────────────────────────────────────────────────┘
 ```
+
 ## Objective
 
 The goal of this project is to demonstrate practical DevOps skills by combining cloud infrastructure automation, containerization, and CI/CD into a single streamlined pipeline.
