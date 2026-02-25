@@ -105,6 +105,19 @@ resource "azurerm_linux_virtual_machine" "networking_vm" {
     public_key = file("${path.module}/id_rsa.pub")
   }
 
+  custom_data = base64encode(<<EOF
+#!/bin/bash
+apt update -y
+apt install docker.io -y
+systemctl enable docker
+systemctl start docker
+usermod -aG docker adithravi
+
+docker pull adithravi/networking-app:latest
+docker run -d -p 80:5000 --name networking-container adithravi/networking-app:latest
+EOF
+  )
+
   os_disk {
     name                 = "networking-vm-osdisk"
     caching              = "ReadWrite"
