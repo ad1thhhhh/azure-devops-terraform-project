@@ -39,7 +39,7 @@ def home():
         </head>
         <body>
             <div class="card">
-                <h1>🚀 Networking Project is Live! Lesssss goooo!!!! - Version 2</h1>
+                <h1>🚀 Networking Project is Live! CI/CD Working - Version 2</h1>
                 <p>Automated Continuous Deployment is working successfully.</p>
                 <div class="footer">
                     Built using Python-Flask
