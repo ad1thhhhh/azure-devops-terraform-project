@@ -1,3 +1,11 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "terraform-backend-rg"
+    storage_account_name = "tfstateadithravi123"
+    container_name       = "tfstate"
+    key                  = "prod.terraform.tfstate"
+  }
+}
 provider "azurerm" {
   features {}
 }
@@ -64,7 +72,7 @@ resource "azurerm_network_security_group" "vm_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "443"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
 }
