@@ -8,7 +8,7 @@ The pipeline is responsible for:
 
 - Provisioning Azure infrastructure using Terraform  
 - Building and pushing a Docker container image  
-- Deploying the containerized application to Azure  
+- Deploying the containerized application to Azure Cloud  
 - Ensuring consistent and repeatable deployments  
 
 The architecture follows **immutable infrastructure principles**, meaning infrastructure components are replaced rather than modified during updates. This approach improves reliability, reduces configuration drift, and makes rollbacks safer and more predictable.
