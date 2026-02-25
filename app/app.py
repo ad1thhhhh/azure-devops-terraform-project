@@ -38,8 +38,8 @@ def home():
         </head>
         <body>
             <div class="card">
-                <h1>🚀 Networking Project is Live!</h1>
-                <p>Welcome! The Python flask application is up and running successfully.</p>
+                <h1>🚀 Networking Project is Live! - Version 2</h1>
+                <p>Automated Continuous Deployment is working successfully.</p>
                 <div class="footer">
                     Built using Python-Flask
                 </div>
