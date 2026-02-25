@@ -38,7 +38,7 @@ def home():
         </head>
         <body>
             <div class="card">
-                <h1>🚀 Networking Project is Live!</h1>
+                <h1>🚀 Networking Project is not Live!</h1>
                 <p>Welcome! The Python flask application is up and running successfully.</p>
                 <div class="footer">
                     Built using Python-Flask
