@@ -1,0 +1,42 @@
+
+- name: Configure VM and Deploy Dockerized WebApp
+  hosts: all
+  become: yes
+
+  vars:
+    docker_image_name: adithravi/networking-app
+    container_name: networking-container
+    container_port: 5000
+    exposed_port: 80
+
+  tasks:
+
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker Engine
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Ensure Docker service is running and enabled on boot
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull latest Docker image from Docker Hub
+      docker_image:
+        name: "{{ docker_image_name }}"
+        source: pull
+
+    - name: Run application container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image_name }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "{{ exposed_port }}:{{ container_port }}"
+      
