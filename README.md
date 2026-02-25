@@ -44,6 +44,41 @@ The architecture follows **immutable infrastructure principles**, meaning infras
 
 ---
 
+## Architecture Diagram
+
+
+Developer
+   │
+   ▼
+GitHub Repository (main branch)
+   │
+   ▼
+GitHub Actions CI/CD Pipeline
+   │
+   ├── Build Docker Image
+   ├── Push Image to DockerHub
+   └── Terraform Apply
+            │
+            ▼
+      Azure Infrastructure
+      ├── Resource Group
+      ├── Virtual Network
+      ├── Subnet
+      ├── Network Security Group
+      ├── Public IP
+      └── Linux Virtual Machine
+                │
+                ▼
+        Cloud-init (Auto Setup)
+                │
+                ▼
+         Docker Container Running App
+                │
+                ▼
+           Publicly Accessible Application
+
+---
+
 ## Objective
 
 The goal of this project is to demonstrate practical DevOps skills by combining cloud infrastructure automation, containerization, and CI/CD into a single streamlined pipeline.
