@@ -74,10 +74,10 @@ jobs:
               sudo usermod -aG docker adithravi
             fi
 
-            docker pull adithravi/networking-app:${{ github.sha }}
-            docker stop networking-container || true
-            docker rm networking-container || true
-            docker run -d \
+            sudo docker pull adithravi/networking-app:${{ github.sha }}
+            sudo docker stop networking-container || true
+            sudo docker rm networking-container || true
+            sudo docker run -d \
               --name networking-container \
               -p 80:5000 \
               adithravi/networking-app:${{ github.sha }}
