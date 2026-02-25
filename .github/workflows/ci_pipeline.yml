@@ -16,12 +16,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-        python-version: '3.9'
+          python-version: '3.9'
 
       - name: Install Dependencies
         run: |
-         cd app
-         pip install -r requirements.txt
+          cd app
+          pip install -r requirements.txt
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
@@ -30,12 +30,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker Image
-        run: |
-          docker build -t adithravi/networking-app:latest ./app
+        run: docker build -t adithravi/networking-app:latest ./app
 
       - name: Push Docker Image
-        run: |
-          docker push adithravi/networking-app:latest
+        run: docker push adithravi/networking-app:latest
 
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@v0.1.10
