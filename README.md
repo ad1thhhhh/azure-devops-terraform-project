@@ -20,7 +20,8 @@ The architecture follows **immutable infrastructure principles**, meaning infras
 - Microsoft Azure  
 - Terraform  
 - GitHub Actions  
-- Docker  
+- Docker
+- Ansible 
 
 ---
 
