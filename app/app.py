@@ -6,6 +6,7 @@ app = Flask(__name__)
 @app.route("/cpu")
 def cpu():
     return {
+        "deployment_version": VERSION,
         "cpu_usage_percent": psutil.cpu_percent(interval=1),
         "memory_usage_percent": psutil.virtual_memory().percent
     }
