@@ -2,8 +2,9 @@ name: Full CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'app/**'
+      - 'ansible/**'
 
 permissions:
   id-token: write
