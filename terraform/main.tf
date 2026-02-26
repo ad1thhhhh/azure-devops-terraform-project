@@ -127,10 +127,41 @@ resource "azurerm_linux_virtual_machine" "networking_vm" {
     version   = "latest"
   }
 
-  
+  identity {
+    type = "SystemAssigned"
+  }  
+}
+data "azurerm_client_config" "current" {}
+
+resource "random_string" "kv_suffix" {
+  length  = 5
+  lower   = true
+  numeric  = true
+  special = false
+  upper   = false
+}
+
+resource "azurerm_key_vault" "kv" {
+  name                        = "devops-kv-${random_string.kv_suffix.result}"
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+  purge_protection_enabled    = false
+  soft_delete_retention_days  = 7
+
+  network_acls {
+    default_action             = "Allow"
+    bypass                     = "AzureServices"
+  }
 }
 
 output "vm_public_ip" {
   value = azurerm_public_ip.public_ip.ip_address
 }
 
+resource "azurerm_role_assignment" "kv_access" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_linux_virtual_machine.networking_vm.identity[0].principal_id
+}
