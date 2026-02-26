@@ -11,7 +11,7 @@ VERSION = os.getenv("VERSION", "dev")
 @app.route("/")
 def home():
     return {
-        "message": "Repoxi DevOps Monitor",
+        "message": "Repoxi DevOp-Monitor",
         "deployment_version": VERSION,
         "hostname": socket.gethostname(),
         "timestamp": datetime.utcnow().isoformat()
