@@ -1,33 +1,45 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Artisan Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+        }
 
-<div class="flex justify-center items-center min-h-[70vh] fade-in">
-    <div class="glass p-10 rounded-2xl w-96 shadow-2xl">
-        <h2 class="text-3xl font-bold mb-6 text-center">Login</h2>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="mb-3 text-center text-sm text-red-400">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
 
-        <form method="POST" class="space-y-4">
-            <input type="text" name="username" placeholder="Username"
-                   class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
 
-            <input type="password" name="password" placeholder="Password"
-                   class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+<body class="text-white min-h-screen">
 
-            <button type="submit"
-                    class="w-full bg-blue-600 py-3 rounded-lg hover:bg-blue-700 transition">
-                Sign In
-            </button>
-        </form>
+<nav class="flex justify-between items-center p-6 glass">
+    <h1 class="text-xl font-bold">Artisan OS</h1>
+    <div class="space-x-4 text-sm text-gray-300">
+        <span>{{ env_name }}</span>
+        <a href="/logout" class="hover:text-white">Logout</a>
     </div>
+</nav>
+
+<div class="p-10">
+    {% block content %}{% endblock %}
 </div>
 
-{% endblock %}
+</body>
+</html>
