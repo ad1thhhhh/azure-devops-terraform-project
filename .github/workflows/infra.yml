@@ -1,0 +1,53 @@
+name: Infrastructure Pipeline
+
+on:
+  push:
+    paths:
+      - 'terraform/**'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
+
+      - name: Get VM Public IP
+        id: get_ip
+        working-directory: terraform
+        run: echo "VM_IP=$(terraform output -raw vm_public_ip)" >> $GITHUB_ENV
+
+      - name: Update GitHub Secret VM_IP
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh secret set VM_IP --body "$VM_IP"
