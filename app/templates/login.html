@@ -3,144 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Driftwood Café — Staff Entry</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<script>
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                espresso: '#2a1f1a',
-                roast: '#3b2b23',
-                caramel: '#c08a4d',
-                cream: '#f5e6d3',
-                foam: '#fff8ef'
-            }
-        }
-    }
-}
-</script>
+<title>Driftwood Café — Staff Login</title>
 
 <style>
+:root {
+    --espresso:#2a1f1a;
+    --roast:#3b2b23;
+    --caramel:#c08a4d;
+    --cream:#f5e6d3;
+    --foam:#fff8ef;
+}
 
-/* Background */
-body {
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
     background:
-        radial-gradient(circle at 30% 20%, rgba(192,138,77,0.1), transparent 40%),
-        radial-gradient(circle at 70% 80%, rgba(255,248,239,0.05), transparent 40%),
-        #2a1f1a;
-    color:#f5e6d3;
+        radial-gradient(circle at 20% 30%, rgba(192,138,77,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,248,239,0.05), transparent 40%),
+        var(--espresso);
+    color:var(--cream);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     overflow:hidden;
 }
 
 /* Steam */
-.steam {
+.steam{
     position:absolute;
     width:8px;
     height:60px;
-    background:rgba(255,248,239,0.08);
+    background:rgba(255,248,239,0.07);
     border-radius:50%;
     filter:blur(6px);
     animation:steamRise 6s infinite ease-in-out;
 }
 
-@keyframes steamRise {
-    0% {transform:translateY(0) scaleX(1); opacity:0;}
-    30% {opacity:1;}
-    60% {transform:translateY(-60px) scaleX(1.2);}
-    100% {transform:translateY(-120px) scaleX(0.8); opacity:0;}
+@keyframes steamRise{
+    0%{transform:translateY(0);opacity:0;}
+    30%{opacity:1;}
+    60%{transform:translateY(-60px);}
+    100%{transform:translateY(-120px);opacity:0;}
 }
 
 /* Card */
-.card {
+.card{
     background:rgba(59,43,35,0.95);
-    backdrop-filter:blur(8px);
-    border-radius:24px;
-    box-shadow:0 30px 60px rgba(0,0,0,0.7);
+    backdrop-filter:blur(10px);
+    border-radius:28px;
+    box-shadow:0 40px 80px rgba(0,0,0,0.7);
+    padding:40px;
+    width:380px;
+    text-align:center;
     animation:fadeIn 0.8s ease forwards;
 }
 
-@keyframes fadeIn {
-    from {opacity:0; transform:translateY(40px);}
-    to {opacity:1; transform:translateY(0);}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(40px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* Buttons */
+.role-btn{
+    background:linear-gradient(135deg,var(--caramel),#a06f3d);
+    color:var(--espresso);
+    padding:14px;
+    border-radius:16px;
+    font-weight:600;
+    border:none;
+    cursor:pointer;
+    width:100%;
+    margin-top:12px;
+    transition:all 0.25s ease;
+}
+
+.role-btn:hover{
+    transform:translateY(-4px) scale(1.05);
+    box-shadow:0 15px 30px rgba(192,138,77,0.4);
+}
+
+.role-btn.active{
+    outline:2px solid var(--cream);
 }
 
 /* Inputs */
-.input-coffee {
-    background:#3b2b23;
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:14px;
-    padding:12px 16px;
+.input{
     width:100%;
-    color:#f5e6d3;
+    padding:12px 16px;
+    background:var(--roast);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    color:var(--cream);
+    margin-top:14px;
     transition:all 0.25s ease;
 }
 
-.input-coffee:focus {
+.input:focus{
     outline:none;
-    border-color:#c08a4d;
+    border-color:var(--caramel);
     box-shadow:0 0 12px rgba(192,138,77,0.4);
 }
 
-/* Button */
-.btn-coffee {
-    background:linear-gradient(135deg,#c08a4d,#a06f3d);
-    color:#2a1f1a;
-    padding:12px;
-    border-radius:16px;
-    font-weight:600;
-    transition:all 0.25s ease;
+.login-btn{
+    margin-top:18px;
+    width:100%;
 }
 
-.btn-coffee:hover {
-    transform:translateY(-3px) scale(1.05);
-    box-shadow:0 12px 25px rgba(192,138,77,0.4);
+/* Hidden section */
+.credentials{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.6s ease;
 }
 
-.btn-coffee:active {
-    transform:scale(0.95);
+.credentials.show{
+    max-height:300px;
 }
-
 </style>
 </head>
 
-<body class="flex items-center justify-center min-h-screen relative">
+<body>
 
-<!-- Steam Effects -->
-<div class="steam left-1/4 top-24"></div>
-<div class="steam left-1/2 top-32" style="animation-delay:2s;"></div>
-<div class="steam left-3/4 top-28" style="animation-delay:4s;"></div>
+<!-- Steam ambience -->
+<div class="steam" style="left:25%;top:70px;"></div>
+<div class="steam" style="left:55%;top:80px;animation-delay:2s;"></div>
+<div class="steam" style="left:75%;top:60px;animation-delay:4s;"></div>
 
-<div class="card p-10 w-full max-w-md relative z-10">
+<div class="card">
 
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-caramel">
-            Driftwood Café
-        </h1>
-        <p class="text-sm opacity-70 mt-2">
-            Begin Your Shift ☕
-        </p>
-    </div>
+    <h1 style="color:var(--caramel);font-size:26px;">
+        Driftwood Café
+    </h1>
 
-    <form class="space-y-6">
+    <p style="margin-top:8px;font-size:14px;opacity:0.8;">
+        Good morning. Let’s brew something meaningful today ☕
+    </p>
 
-        <input type="text"
-               placeholder="Username"
-               class="input-coffee">
-
-        <input type="password"
-               placeholder="Password"
-               class="input-coffee">
-
-        <button class="btn-coffee w-full">
-            Start Shift
+    <div style="margin-top:25px;">
+        <button class="role-btn" onclick="selectRole('artisan', this)">
+            Artisan
         </button>
 
-    </form>
+        <button class="role-btn" onclick="selectRole('curator', this)">
+            Curator
+        </button>
+    </div>
+
+    <div class="credentials" id="credentialsSection">
+
+        <input type="text" id="username" placeholder="Username" class="input" required>
+        <input type="password" id="password" placeholder="Password" class="input" required>
+
+        <button class="role-btn login-btn" onclick="login()">
+            Enter Café
+        </button>
+
+    </div>
 
 </div>
+
+<script>
+
+let selectedRole = null;
+
+function selectRole(role, btn){
+    selectedRole = role;
+
+    document.querySelectorAll(".role-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    document.getElementById("credentialsSection").classList.add("show");
+}
+
+function login(){
+
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+
+    if(!selectedRole){
+        alert("Please select a role ☕");
+        return;
+    }
+
+    if(user.length < 3 || pass.length < 3){
+        alert("Invalid credentials");
+        return;
+    }
+
+    if(selectedRole === "artisan"){
+        window.location.href="artisan.html";
+    } else {
+        window.location.href="curator.html";
+    }
+}
+
+</script>
 
 </body>
 </html>

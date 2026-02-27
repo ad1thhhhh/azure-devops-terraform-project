@@ -1,67 +1,170 @@
-{% extends "base.html" %}
-{% block content %}
-
-<div class="max-w-5xl mx-auto space-y-12">
-
-<h1 class="text-4xl font-bold text-caramel tracking-wide">
-Artisan Task Board
-</h1>
-
-<div id="taskContainer" class="space-y-6"></div>
-
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driftwood Café — Artisan Board</title>
 
 <style>
-
-/* Task Card Entry Animation */
-.task-enter {
-    opacity:0;
-    transform:translateY(20px);
-    animation:taskFade 0.5s ease forwards;
+:root {
+    --espresso:#2a1f1a;
+    --roast:#3b2b23;
+    --caramel:#c08a4d;
+    --cream:#f5e6d3;
+    --foam:#fff8ef;
 }
 
-@keyframes taskFade {
-    to {
-        opacity:1;
-        transform:translateY(0);
-    }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',sans-serif;
 }
 
-/* Completed Task Style */
-.task-completed {
-    text-decoration: line-through;
+body{
+    background:
+        radial-gradient(circle at 20% 30%, rgba(192,138,77,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,248,239,0.05), transparent 40%),
+        var(--espresso);
+    color:var(--cream);
+    min-height:100vh;
+}
+
+/* Navbar */
+.nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:rgba(0,0,0,0.2);
+    backdrop-filter:blur(6px);
+}
+
+.logo{
+    font-size:22px;
+    font-weight:700;
+    color:var(--caramel);
+}
+
+.logout{
+    cursor:pointer;
+    opacity:0.7;
+    transition:0.3s;
+}
+.logout:hover{opacity:1;}
+
+/* Layout */
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:40px 20px;
+}
+
+/* Stats */
+.stats{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:30px;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.stat-card{
+    flex:1;
+    background:rgba(59,43,35,0.95);
+    padding:20px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+    transition:0.3s;
+}
+.stat-card:hover{transform:translateY(-4px);}
+
+/* Tasks */
+.task{
+    background:rgba(59,43,35,0.95);
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.5);
+    transition:0.3s;
+    animation:fadeIn 0.4s ease;
+}
+
+.task.completed{
     opacity:0.6;
-    transition:all 0.3s ease;
+    text-decoration:line-through;
 }
 
-/* High Priority Glow */
-.high-priority {
-    border:2px solid #facc15;
-    box-shadow:0 0 12px rgba(250,204,21,0.4);
+.task:hover{
+    transform:translateY(-4px);
 }
 
-/* Ripple Effect */
-.ripple {
-    position:relative;
-    overflow:hidden;
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
 }
 
-.ripple span {
+/* Checkbox */
+.checkbox{
+    width:22px;
+    height:22px;
+    cursor:pointer;
+    accent-color:var(--caramel);
+}
+
+/* Coffee burst animation */
+.burst{
     position:absolute;
-    border-radius:50%;
-    transform:scale(0);
-    animation:rippleEffect 600ms linear;
-    background:rgba(255,255,255,0.4);
+    font-size:20px;
+    animation:burstAnim 0.8s ease forwards;
 }
 
-@keyframes rippleEffect {
-    to {
-        transform:scale(4);
-        opacity:0;
-    }
+@keyframes burstAnim{
+    0%{opacity:1;transform:translateY(0) scale(1);}
+    100%{opacity:0;transform:translateY(-40px) scale(1.5);}
 }
 
+.empty{
+    text-align:center;
+    opacity:0.6;
+    margin-top:40px;
+}
 </style>
+</head>
+
+<body>
+
+<div class="nav">
+    <div class="logo">Driftwood Café — Artisan</div>
+    <div class="logout" onclick="logout()">Logout</div>
+</div>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Total</h3>
+            <h2 id="totalCount">0</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Completed</h3>
+            <h2 id="completedCount">0</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <h2 id="pendingCount">0</h2>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div id="taskContainer"></div>
+
+</div>
 
 <script>
 
@@ -74,101 +177,76 @@ function saveTasks(tasks){
     localStorage.setItem("cafeTasks", JSON.stringify(tasks));
 }
 
-/* Complete Task */
-function completeTask(id){
-
-    let tasks=getTasks();
-
-    tasks=tasks.map(t=>{
-        if(t.id===id){
-            t.status="completed";
-        }
-        return t;
-    });
-
+/* Toggle completion */
+function toggleTask(id, checkbox){
+    const tasks = getTasks();
+    const task = tasks.find(t=>t.id===id);
+    task.completed = checkbox.checked;
     saveTasks(tasks);
-    renderTasks();
+
+    if(checkbox.checked){
+        coffeeBurst(checkbox);
+    }
+
+    refreshUI();
 }
 
-/* Ripple Effect */
-function createRipple(event,button){
-    const circle=document.createElement("span");
-    const diameter=Math.max(button.clientWidth,button.clientHeight);
-    const radius=diameter/2;
+/* Coffee animation */
+function coffeeBurst(element){
+    const burst=document.createElement("div");
+    burst.className="burst";
+    burst.innerText="☕";
+    burst.style.left=element.getBoundingClientRect().left+"px";
+    burst.style.top=element.getBoundingClientRect().top+"px";
+    document.body.appendChild(burst);
 
-    circle.style.width=circle.style.height=`${diameter}px`;
-    circle.style.left=`${event.clientX-button.offsetLeft-radius}px`;
-    circle.style.top=`${event.clientY-button.offsetTop-radius}px`;
-
-    button.appendChild(circle);
-
-    setTimeout(()=>circle.remove(),600);
+    setTimeout(()=>burst.remove(),800);
 }
 
-/* Render Tasks */
-function renderTasks(){
-
+/* Refresh UI */
+function refreshUI(){
+    const tasks=getTasks();
     const container=document.getElementById("taskContainer");
+
+    const total=tasks.length;
+    const completed=tasks.filter(t=>t.completed).length;
+    const pending=total-completed;
+
+    document.getElementById("totalCount").innerText=total;
+    document.getElementById("completedCount").innerText=completed;
+    document.getElementById("pendingCount").innerText=pending;
+
     container.innerHTML="";
 
-    const tasks=getTasks().reverse();
+    if(total===0){
+        container.innerHTML='<div class="empty">No tasks yet ☕</div>';
+        return;
+    }
 
-    tasks.forEach((task,index)=>{
-
-        const card=document.createElement("div");
-        card.className="card p-6 flex justify-between items-center task-enter";
-
-        if(task.priority==="high"){
-            card.classList.add("high-priority");
-        }
-
-        const left=document.createElement("div");
-
-        const title=document.createElement("div");
-        title.textContent=task.name;
-        title.className="text-lg font-semibold";
-
-        if(task.status==="completed"){
-            title.classList.add("task-completed");
-        }
-
-        left.appendChild(title);
-
-        const right=document.createElement("div");
-
-        if(task.status==="pending"){
-
-            const btn=document.createElement("button");
-            btn.textContent="Complete";
-            btn.className="btn-coffee ripple";
-            btn.onclick=(e)=>{
-                createRipple(e,btn);
-                setTimeout(()=>completeTask(task.id),200);
-            };
-
-            right.appendChild(btn);
-
-        } else {
-
-            const done=document.createElement("span");
-            done.textContent="✔ Completed";
-            done.className="text-green-400 font-semibold";
-            right.appendChild(done);
-        }
-
-        card.appendChild(left);
-        card.appendChild(right);
-
-        container.appendChild(card);
+    tasks.forEach(task=>{
+        const div=document.createElement("div");
+        div.className="task"+(task.completed?" completed":"");
+        div.innerHTML=`
+            <span>${task.text}</span>
+            <input type="checkbox" class="checkbox"
+                ${task.completed?"checked":""}
+                onchange="toggleTask(${task.id}, this)">
+        `;
+        container.appendChild(div);
     });
-
 }
 
 /* Live Sync */
-window.addEventListener("storage",renderTasks);
-document.addEventListener("DOMContentLoaded",renderTasks);
+window.addEventListener("storage", refreshUI);
+
+/* Logout */
+function logout(){
+    window.location.href="login.html";
+}
+
+refreshUI();
 
 </script>
 
-{% endblock %}
-
+</body>
+</html>

@@ -5,155 +5,187 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Driftwood Café</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                espresso: '#2a1f1a',
-                roast: '#3b2b23',
-                caramel: '#c08a4d',
-                cream: '#f5e6d3',
-                foam: '#fff8ef'
-            }
-        }
-    }
-}
-</script>
-
 <style>
+:root {
+    --espresso:#2a1f1a;
+    --roast:#3b2b23;
+    --caramel:#c08a4d;
+    --cream:#f5e6d3;
+    --foam:#fff8ef;
+}
 
-/* Background Ambience */
-body {
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
     background:
-        radial-gradient(circle at 20% 20%, rgba(192,138,77,0.08), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(255,248,239,0.05), transparent 40%),
-        #2a1f1a;
-    color:#f5e6d3;
+        radial-gradient(circle at 20% 30%, rgba(192,138,77,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,248,239,0.05), transparent 40%),
+        var(--espresso);
+    color:var(--cream);
     min-height:100vh;
     overflow-x:hidden;
 }
 
-/* Floating Steam Animation */
-.steam {
-    position:fixed;
+/* Steam */
+.steam{
+    position:absolute;
     width:8px;
     height:60px;
-    background:rgba(255,248,239,0.08);
+    background:rgba(255,248,239,0.07);
     border-radius:50%;
     filter:blur(6px);
     animation:steamRise 6s infinite ease-in-out;
-    pointer-events:none;
 }
 
-@keyframes steamRise {
-    0% {transform:translateY(0) scaleX(1); opacity:0;}
-    30% {opacity:1;}
-    60% {transform:translateY(-60px) scaleX(1.2);}
-    100% {transform:translateY(-120px) scaleX(0.8); opacity:0;}
+@keyframes steamRise{
+    0%{transform:translateY(0);opacity:0;}
+    30%{opacity:1;}
+    60%{transform:translateY(-60px);}
+    100%{transform:translateY(-120px);opacity:0;}
 }
 
-/* Card */
-.card {
+/* Glass card */
+.card{
     background:rgba(59,43,35,0.95);
-    backdrop-filter:blur(6px);
-    border-radius:22px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+    backdrop-filter:blur(10px);
+    border-radius:24px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.6);
+    padding:30px;
     transition:all 0.3s ease;
 }
 
-.card:hover {
-    transform:translateY(-6px);
-    box-shadow:0 25px 50px rgba(0,0,0,0.7);
+.card:hover{
+    transform:translateY(-4px);
 }
 
-/* Button */
-.btn-coffee {
-    background:linear-gradient(135deg,#c08a4d,#a06f3d);
-    color:#2a1f1a;
-    padding:10px 20px;
+/* Buttons */
+.btn{
+    background:linear-gradient(135deg,var(--caramel),#a06f3d);
+    color:var(--espresso);
+    padding:12px 22px;
     border-radius:14px;
     font-weight:600;
+    border:none;
+    cursor:pointer;
     transition:all 0.25s ease;
 }
 
-.btn-coffee:hover {
+.btn:hover{
     transform:translateY(-3px) scale(1.05);
-    box-shadow:0 10px 25px rgba(192,138,77,0.4);
+    box-shadow:0 10px 20px rgba(192,138,77,0.4);
 }
 
-.btn-coffee:active {
-    transform:scale(0.96);
+.btn:active{
+    transform:scale(0.95);
 }
 
 /* Inputs */
-.input-coffee {
-    background:#3b2b23;
-    border:1px solid rgba(255,255,255,0.1);
-    padding:12px 16px;
-    border-radius:14px;
+.input{
     width:100%;
-    color:#f5e6d3;
+    padding:12px 16px;
+    background:var(--roast);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    color:var(--cream);
     transition:all 0.25s ease;
 }
 
-.input-coffee:focus {
+.input:focus{
     outline:none;
-    border-color:#c08a4d;
-    box-shadow:0 0 12px rgba(192,138,77,0.3);
+    border-color:var(--caramel);
+    box-shadow:0 0 12px rgba(192,138,77,0.4);
 }
 
-/* Page Fade In */
-.fade-in {
-    animation:fadeIn 0.8s ease forwards;
+/* Fade animation */
+.fade-in{
+    animation:fadeIn 0.6s ease forwards;
 }
 
-@keyframes fadeIn {
-    from {opacity:0; transform:translateY(30px);}
-    to {opacity:1; transform:translateY(0);}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(30px);}
+    to{opacity:1;transform:translateY(0);}
 }
 
-/* Soft Pulse for important numbers */
-.pulse-soft {
-    animation:pulseSoft 2.5s infinite ease-in-out;
+/* Layout */
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:40px 20px;
 }
 
-@keyframes pulseSoft {
-    0% {transform:scale(1);}
-    50% {transform:scale(1.05);}
-    100% {transform:scale(1);}
+/* Navbar */
+.nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:rgba(0,0,0,0.2);
+    backdrop-filter:blur(6px);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width:8px;
-}
-::-webkit-scrollbar-track {
-    background:#2a1f1a;
-}
-::-webkit-scrollbar-thumb {
-    background:#c08a4d;
-    border-radius:10px;
+.logo{
+    font-size:22px;
+    font-weight:700;
+    color:var(--caramel);
 }
 
+.logout{
+    cursor:pointer;
+    opacity:0.7;
+    transition:0.3s;
+}
+
+.logout:hover{
+    opacity:1;
+}
 </style>
-
 </head>
 
-<body class="p-8 relative">
+<body>
 
 <!-- Ambient Steam -->
-<div class="steam left-1/4 top-20"></div>
-<div class="steam left-1/2 top-32" style="animation-delay:2s;"></div>
-<div class="steam left-3/4 top-28" style="animation-delay:4s;"></div>
+<div class="steam" style="left:20%;top:60px;"></div>
+<div class="steam" style="left:50%;top:80px;animation-delay:2s;"></div>
+<div class="steam" style="left:75%;top:70px;animation-delay:4s;"></div>
 
-<div class="max-w-7xl mx-auto fade-in">
-{% block content %}{% endblock %}
+<div class="nav">
+    <div class="logo">Driftwood Café</div>
+    <div class="logout" onclick="logout()">Logout</div>
 </div>
 
-</body>
-</html>xy
+<main class="container fade-in">
+    <!-- PAGE CONTENT GOES HERE -->
+</main>
 
+<script>
+
+/* Shared Task Storage */
+function getTasks(){
+    return JSON.parse(localStorage.getItem("cafeTasks") || "[]");
+}
+
+function saveTasks(tasks){
+    localStorage.setItem("cafeTasks", JSON.stringify(tasks));
+}
+
+/* Cross-tab Sync */
+window.addEventListener("storage", ()=>{
+    if(typeof refreshUI === "function"){
+        refreshUI();
+    }
+});
+
+/* Logout */
+function logout(){
+    window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>

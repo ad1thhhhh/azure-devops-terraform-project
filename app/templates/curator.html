@@ -1,81 +1,187 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driftwood Café — Curator Dashboard</title>
 
-<div class="max-w-6xl mx-auto space-y-12">
+<style>
+:root {
+    --espresso:#2a1f1a;
+    --roast:#3b2b23;
+    --caramel:#c08a4d;
+    --cream:#f5e6d3;
+    --foam:#fff8ef;
+}
 
-<h1 class="text-4xl font-bold text-caramel tracking-wide">
-Curator Task Console
-</h1>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',sans-serif;
+}
 
-<!-- Add Task -->
-<div class="card p-8 space-y-6">
+body{
+    background:
+        radial-gradient(circle at 20% 30%, rgba(192,138,77,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,248,239,0.05), transparent 40%),
+        var(--espresso);
+    color:var(--cream);
+    min-height:100vh;
+}
 
-    <h2 class="text-xl font-semibold text-caramel">
-        Create Café Task
-    </h2>
+/* Navbar */
+.nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:rgba(0,0,0,0.2);
+    backdrop-filter:blur(6px);
+}
 
-    <div class="grid md:grid-cols-3 gap-6">
+.logo{
+    font-size:22px;
+    font-weight:700;
+    color:var(--caramel);
+}
 
-        <input type="text"
-               id="task_name"
-               placeholder="e.g. Clean Coffee Machine"
-               class="input-coffee">
+.logout{
+    cursor:pointer;
+    opacity:0.7;
+    transition:0.3s;
+}
+.logout:hover{opacity:1;}
 
-        <select id="priority"
-                class="input-coffee">
-            <option value="normal">Normal Priority</option>
-            <option value="high">High Priority</option>
-        </select>
+/* Layout */
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:40px 20px;
+}
 
-        <button onclick="addTask()"
-                class="btn-coffee">
-            Add Task
-        </button>
+/* Cards */
+.card{
+    background:rgba(59,43,35,0.95);
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+    transition:0.3s;
+}
+.card:hover{transform:translateY(-5px);}
 
-    </div>
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
 
+/* Input */
+.input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:12px;
+    border:none;
+    background:var(--roast);
+    color:var(--cream);
+}
+
+.btn{
+    background:linear-gradient(135deg,var(--caramel),#a06f3d);
+    color:var(--espresso);
+    padding:10px 18px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    margin-top:12px;
+    transition:0.3s;
+}
+.btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 20px rgba(192,138,77,0.4);
+}
+
+/* Task List */
+.task-item{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+    padding:10px;
+    border-radius:10px;
+    background:rgba(0,0,0,0.2);
+    animation:fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(15px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* Progress Ring */
+.progress-ring{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    background:conic-gradient(var(--caramel) 0deg, #444 0deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:bold;
+    margin:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+    <div class="logo">Driftwood Café — Curator</div>
+    <div class="logout" onclick="logout()">Logout</div>
 </div>
 
-<!-- KPI Section -->
-<div class="grid md:grid-cols-3 gap-8">
+<div class="container">
 
-    <div class="card p-6 text-center">
-        <div class="opacity-60">Total Tasks</div>
-        <div id="totalTasks"
-             class="text-4xl text-caramel font-bold transition-all duration-300">
-            0
+    <!-- Stats Section -->
+    <div class="grid">
+
+        <div class="card">
+            <h3>Total Tasks</h3>
+            <h2 id="totalCount">0</h2>
         </div>
-    </div>
 
-    <div class="card p-6 text-center">
-        <div class="opacity-60">Completed</div>
-        <div id="completedTasks"
-             class="text-4xl text-green-400 font-bold transition-all duration-300">
-            0
+        <div class="card">
+            <h3>Completed</h3>
+            <h2 id="completedCount">0</h2>
         </div>
-    </div>
 
-    <div class="card p-6 text-center">
-        <div class="opacity-60">Pending</div>
-        <div id="pendingTasks"
-             class="text-4xl text-yellow-400 font-bold transition-all duration-300">
-            0
+        <div class="card">
+            <h3>Pending</h3>
+            <h2 id="pendingCount">0</h2>
         </div>
+
+        <div class="card">
+            <div class="progress-ring" id="progressRing">
+                0%
+            </div>
+        </div>
+
     </div>
 
-</div>
+    <!-- Add Task -->
+    <div class="card" style="margin-top:30px;">
+        <h3>Assign New Task</h3>
+        <input type="text" id="taskInput" class="input" placeholder="e.g. Clean coffee machine">
+        <button class="btn" onclick="addTask()">Add Task</button>
+    </div>
 
-<!-- Chart -->
-<div class="card p-8">
-    <canvas id="taskChart"></canvas>
-</div>
+    <!-- Task List -->
+    <div class="card" style="margin-top:30px;">
+        <h3>All Tasks</h3>
+        <div id="taskList"></div>
+    </div>
 
-</div>
-
-<!-- Toast -->
-<div id="toast"
-     class="fixed bottom-8 right-8 bg-caramel text-espresso px-6 py-3 rounded-xl shadow-xl opacity-0 transition-all duration-300">
-Task Added ☕
 </div>
 
 <script>
@@ -89,108 +195,73 @@ function saveTasks(tasks){
     localStorage.setItem("cafeTasks", JSON.stringify(tasks));
 }
 
-/* Toast */
-function showToast(){
-    const t=document.getElementById("toast");
-    t.style.opacity="1";
-    t.style.transform="translateY(-10px)";
-    setTimeout(()=>{
-        t.style.opacity="0";
-        t.style.transform="translateY(0)";
-    },2000);
-}
-
-/* Counter Animation */
-function animateNumber(id,end){
-    const el=document.getElementById(id);
-    const start=parseInt(el.textContent)||0;
-    const duration=600;
-    const range=end-start;
-    const increment=range/30;
-    let current=start;
-    let step=0;
-
-    const timer=setInterval(()=>{
-        current+=increment;
-        el.textContent=Math.round(current);
-        step++;
-        if(step>=30){
-            el.textContent=end;
-            clearInterval(timer);
-        }
-    },duration/30);
-}
-
 /* Add Task */
 function addTask(){
+    const input = document.getElementById("taskInput");
+    if(input.value.trim() === "") return;
 
-    const name=document.getElementById("task_name").value.trim();
-    const priority=document.getElementById("priority").value;
-
-    if(!name) return;
-
-    const tasks=getTasks();
-
+    const tasks = getTasks();
     tasks.push({
         id:Date.now(),
-        name:name,
-        priority:priority,
-        status:"pending"
+        text:input.value,
+        completed:false
     });
 
     saveTasks(tasks);
-
-    document.getElementById("task_name").value="";
-    showToast();
-    renderDashboard();
+    input.value="";
+    refreshUI();
 }
 
-/* Chart */
-let taskChart;
+/* Delete */
+function deleteTask(id){
+    let tasks = getTasks();
+    tasks = tasks.filter(t=>t.id!==id);
+    saveTasks(tasks);
+    refreshUI();
+}
 
-function renderDashboard(){
+/* Refresh UI */
+function refreshUI(){
+    const tasks = getTasks();
 
-    const tasks=getTasks();
+    const total = tasks.length;
+    const completed = tasks.filter(t=>t.completed).length;
+    const pending = total - completed;
+    const percent = total===0 ? 0 : Math.round((completed/total)*100);
 
-    const total=tasks.length;
-    const completed=tasks.filter(t=>t.status==="completed").length;
-    const pending=total-completed;
+    document.getElementById("totalCount").innerText=total;
+    document.getElementById("completedCount").innerText=completed;
+    document.getElementById("pendingCount").innerText=pending;
 
-    animateNumber("totalTasks",total);
-    animateNumber("completedTasks",completed);
-    animateNumber("pendingTasks",pending);
+    const ring = document.getElementById("progressRing");
+    ring.innerText=percent+"%";
+    ring.style.background=`conic-gradient(var(--caramel) ${percent*3.6}deg, #444 ${percent*3.6}deg)`;
 
-    if(taskChart) taskChart.destroy();
+    const list = document.getElementById("taskList");
+    list.innerHTML="";
 
-    taskChart=new Chart(document.getElementById("taskChart"),{
-        type:"doughnut",
-        data:{
-            labels:["Completed","Pending"],
-            datasets:[{
-                data:[completed,pending],
-                backgroundColor:["#22c55e","#facc15"],
-                hoverOffset:10
-            }]
-        },
-        options:{
-            animation:{
-                animateScale:true,
-                duration:1000,
-                easing:"easeOutQuart"
-            },
-            plugins:{
-                legend:{
-                    labels:{color:"#f5e6d3"}
-                }
-            }
-        }
+    tasks.forEach(task=>{
+        const div=document.createElement("div");
+        div.className="task-item";
+        div.innerHTML=`
+            <span>${task.text} ${task.completed ? "☕" : ""}</span>
+            <button class="btn" onclick="deleteTask(${task.id})">Remove</button>
+        `;
+        list.appendChild(div);
     });
 }
 
 /* Live Sync */
-window.addEventListener("storage",renderDashboard);
-document.addEventListener("DOMContentLoaded",renderDashboard);
+window.addEventListener("storage", refreshUI);
+
+/* Logout */
+function logout(){
+    window.location.href="login.html";
+}
+
+refreshUI();
 
 </script>
 
-{% endblock %}
+</body>
+</html>
