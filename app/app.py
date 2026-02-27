@@ -7,6 +7,10 @@ app.secret_key = "driftwood_secret_key"
 # Environment (DEV by default, can override with ENV_NAME variable)
 app.config["ENV_NAME"] = os.environ.get("ENV_NAME", "DEV")
 
+@app.context_processor
+def inject_env():
+    return dict(env_name=app.config["ENV_NAME"])
+
 # Hardcoded users
 users = {
     "curator": {"password": "curator123", "role": "curator"},
