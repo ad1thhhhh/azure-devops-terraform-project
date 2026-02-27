@@ -1,4 +1,4 @@
-name: Full CI/CD Pipeline
+name: App Deployment Pipeline
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
       - 'ansible/**'
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -18,68 +17,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-     
-      # ---------- Building a Docker ----------
+      # ---------- Docker Build ----------
       - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Building Docker Image
+      - name: Build Docker Image
         run: docker build -t adithravi/networking-app:${{ github.sha }} ./app
 
-      - name: Pushing Docker Image
+      - name: Push Docker Image
         run: docker push adithravi/networking-app:${{ github.sha }}
 
-      # ---------- Install Ansible ----------
-      - name: Install Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y ansible
-
-      # ---------- Run Ansible Playbook ----------
-      - name: Run Ansible Playbook
-        run: |
-          ansible-playbook -i "${{ env.VM_IP }}," ansible/playbook.yml --extra-vars "image_tag=${{ github.sha }}"
-
-     # ---------- Logging in to Azure ----------
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # ---------- Setting-up Terraform ----------
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init
-        working-directory: terraform
-        run: terraform init
-
-      - name: Terraform Plan
-        working-directory: terraform
-        run: terraform plan
-
-      - name: Terraform Apply
-        id: terraform
-        working-directory: terraform
-        run: |
-          terraform apply -auto-approve
-          echo "VM_IP=$(terraform output -raw vm_public_ip)" >> $GITHUB_ENV
-
-      # ---------- Deploying to Azure VM ----------
+      # ---------- Deploy to Azure VM ----------
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ env.VM_IP }}
+          host: ${{ secrets.VM_IP }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             # Install Docker if not installed
             if ! command -v docker &> /dev/null
             then
-              echo "Installing Docker..."
               sudo apt update -y
               sudo apt install -y docker.io
               sudo systemctl enable docker
@@ -94,5 +55,3 @@ jobs:
               --name networking-container \
               -p 80:5000 \
               adithravi/networking-app:${{ github.sha }}
-
-     

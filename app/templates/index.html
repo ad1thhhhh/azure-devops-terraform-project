@@ -9,9 +9,11 @@
         <h1>🌊 Driftwood Café</h1>
         <p class="subtitle">Crafting calm. Brewing focus.</p>
 
-        <div class="input-section">
-            <input type="text" id="taskInput" placeholder="Add new barista task...">
-            <button onclick="addTask()">Add</button>
+        <div class="stats">
+            <p id="taskStats">0 Tasks</p>
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
         </div>
 
         <ul id="taskList"></ul>
