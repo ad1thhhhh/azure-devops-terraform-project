@@ -1,124 +1,94 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h1 class="text-4xl font-bold mb-10">Curator Dashboard</h1>
+<div class="space-y-10">
 
-<!-- KPI CARDS -->
-<div class="grid md:grid-cols-3 gap-6 mb-12">
-
-    <!-- Total Tasks -->
-    <div class="glass p-6 rounded-2xl hover:scale-105 hover:shadow-xl hover:shadow-gold/20 transition duration-300">
-        <p class="text-gray-400">Total Tasks</p>
-        <p class="text-4xl font-bold text-gold mt-2">
-            {{ tasks|length }}
-        </p>
-    </div>
-
-    <!-- Completed Tasks -->
-    <div class="glass p-6 rounded-2xl hover:scale-105 hover:shadow-xl hover:shadow-green-500/20 transition duration-300">
-        <p class="text-gray-400">Completed</p>
-        <p class="text-4xl font-bold text-green-400 mt-2">
-            {{ tasks|selectattr("completed")|list|length }}
-        </p>
-    </div>
-
-    <!-- Progress Chart -->
-    <div class="glass p-6 rounded-2xl flex items-center justify-center">
-        <div class="w-32 h-32">
-            <canvas id="progressChart"></canvas>
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Curator Dashboard</h1>
+            <p class="text-gray-400 mt-2">Manage and track all artisan tasks.</p>
         </div>
     </div>
 
-</div>
+    <!-- Stats Cards -->
+    <div class="grid md:grid-cols-3 gap-6">
 
-
-<!-- CREATE TASK SECTION -->
-<div class="glass p-8 rounded-2xl mb-12">
-    <h2 class="text-2xl mb-6">Create New Task</h2>
-
-    <form method="POST" class="flex gap-4">
-
-        <input 
-            type="text" 
-            name="task"
-            required
-            placeholder="Enter new task..."
-            class="flex-1 p-3 rounded bg-black/40 border border-gray-700 focus:border-gold focus:ring-1 focus:ring-gold outline-none transition duration-300"
-        >
-
-        <button 
-            class="px-6 py-2 bg-gold text-black rounded hover:scale-105 active:scale-95 transition duration-200"
-        >
-            Add Task
-        </button>
-
-    </form>
-</div>
-
-
-<!-- TASK BOARD -->
-<div class="glass p-8 rounded-2xl">
-    <h2 class="text-2xl mb-6">Task Board</h2>
-
-    {% if tasks|length == 0 %}
-        <p class="text-gray-500">No tasks created yet.</p>
-    {% endif %}
-
-    <div class="space-y-4">
-
-        {% for task in tasks %}
-        <div class="p-4 bg-black/40 rounded-xl flex justify-between items-center hover:bg-black/60 hover:scale-[1.01] transition duration-300">
-
-            <span class="text-lg">
-                {{ task.title }}
-            </span>
-
-            {% if task.completed %}
-                <span class="text-green-400 font-semibold animate-pulse">
-                    ✔ Completed
-                </span>
-            {% else %}
-                <span class="text-yellow-400 font-semibold">
-                    In Progress
-                </span>
-            {% endif %}
-
+        <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+            <p class="text-gray-400 text-sm">Total Tasks</p>
+            <h2 class="text-3xl font-bold text-white mt-2">
+                {{ tasks|length }}
+            </h2>
         </div>
-        {% endfor %}
+
+        <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+            <p class="text-gray-400 text-sm">Completed</p>
+            <h2 class="text-3xl font-bold text-green-400 mt-2">
+                {{ tasks|selectattr("completed")|list|length }}
+            </h2>
+        </div>
+
+        <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+            <p class="text-gray-400 text-sm">Progress</p>
+            <h2 class="text-3xl font-bold text-indigo-400 mt-2">
+                {{ progress|round(0) }}%
+            </h2>
+        </div>
 
     </div>
+
+    <!-- Progress Bar -->
+    <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+        <div class="w-full bg-gray-800 rounded-full h-3">
+            <div class="bg-indigo-500 h-3 rounded-full transition-all duration-500"
+                 style="width: {{ progress }}%">
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task -->
+    <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+        <form method="POST" class="flex gap-4">
+            <input type="text"
+                   name="task"
+                   placeholder="Enter new task..."
+                   required
+                   class="flex-1 px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+            <button type="submit"
+                    class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition">
+                Add Task
+            </button>
+        </form>
+    </div>
+
+    <!-- Task List -->
+    <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800 space-y-4">
+        <h2 class="text-lg font-semibold text-white mb-4">All Tasks</h2>
+
+        {% if tasks %}
+            {% for task in tasks %}
+                <div class="flex justify-between items-center px-4 py-3 rounded-lg bg-gray-900 border border-gray-800">
+                    
+                    <span class="{% if task.completed %}line-through text-gray-500{% else %}text-gray-200{% endif %}">
+                        {{ task.title }}
+                    </span>
+
+                    {% if task.completed %}
+                        <span class="text-green-400 text-sm font-medium">Completed</span>
+                    {% else %}
+                        <span class="text-yellow-400 text-sm font-medium">Pending</span>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500">No tasks yet.</p>
+        {% endif %}
+
+    </div>
+
 </div>
-
-
-<!-- PROGRESS CHART SCRIPT -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const total = {{ tasks|length }};
-    const completed = {{ tasks|selectattr("completed")|list|length }};
-    const remaining = total - completed;
-
-    const ctx = document.getElementById('progressChart');
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Completed', 'Remaining'],
-            datasets: [{
-                data: [completed, remaining],
-                backgroundColor: ['#22c55e', '#c59d5f'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            cutout: '75%',
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-
-});
-</script>
 
 {% endblock %}

@@ -1,65 +1,88 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ sidebarOpen: true }">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Driftwood Café</title>
+    <title>Driftwood Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Alpine.js (lightweight interactivity) -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gold: '#c59d5f'
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Premium Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body {
-            background: radial-gradient(circle at top right, #1a1a1a, #0f0f0f);
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
 
-<body class="text-gray-200 min-h-screen">
+<body class="bg-[#0f172a] text-gray-200 min-h-screen">
 
-<div class="flex min-h-screen">
+    <!-- Top Navigation -->
+    <nav class="bg-[#0b1220] border-b border-gray-800 px-8 py-4 flex justify-between items-center">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg"></div>
+            <span class="text-lg font-semibold tracking-wide text-white">
+                Driftwood
+            </span>
+        </div>
 
-    <!-- Sidebar -->
-    <aside class="w-64 glass p-6 hidden md:block">
+        <!-- Right Section -->
+        <div class="flex items-center gap-6">
 
-        <h2 class="text-2xl font-bold text-gold mb-10">
-            Driftwood Café
-        </h2>
+            <!-- ENV Badge -->
+            {% if env_name == "PROD" %}
+                <span class="px-3 py-1 text-xs font-medium rounded-full bg-red-600 text-white">
+                    PROD
+                </span>
+            {% else %}
+                <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-600 text-white">
+                    DEV
+                </span>
+            {% endif %}
 
-        <nav class="space-y-6">
-            <a href="/" class="block hover:text-gold transition">Home</a>
-            <a href="#" class="block hover:text-gold transition">Dashboard</a>
-            <a href="/logout" class="block hover:text-red-400 transition">Logout</a>
-        </nav>
+            {% if session.username %}
+                <span class="text-sm text-gray-400">
+                    {{ session.username }}
+                </span>
 
-    </aside>
+                <a href="/logout"
+                   class="px-4 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+                    Logout
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="max-w-6xl mx-auto mt-6 px-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 px-4 py-3 rounded-lg text-sm
+                        {% if category == 'success' %}
+                            bg-green-900 text-green-300
+                        {% elif category == 'error' %}
+                            bg-red-900 text-red-300
+                        {% else %}
+                            bg-gray-800 text-gray-300
+                        {% endif %}
+                    ">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 
     <!-- Main Content -->
-    <main class="flex-1 p-10">
+    <main class="max-w-6xl mx-auto px-6 py-10">
         {% block content %}{% endblock %}
     </main>
-
-</div>
 
 </body>
 </html>
