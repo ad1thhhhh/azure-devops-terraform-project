@@ -1,56 +1,206 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 class="text-4xl font-bold mb-8 fade-in">Artisan Dashboard</h1>
+<div class="max-w-7xl mx-auto">
 
-<div class="glass p-4 rounded-xl mb-8 flex justify-between items-center">
-    <div>
-        <div class="text-gray-400 text-sm">Daily Streak</div>
-        <div id="streakCount" class="text-3xl font-bold">0</div>
-    </div>
-    <div class="text-4xl">🔥</div>
-</div>
-
-<div class="space-y-5">
-{% for task in tasks %}
-    <div class="glass p-5 rounded-2xl flex justify-between items-center">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
 
         <div>
-            <div class="font-medium text-lg">
-                {{ task.title }}
-            </div>
-
-            {% if task.completed %}
-            <div class="text-green-400 text-sm mt-1">
-                ✔ Completed
-            </div>
-            {% endif %}
+            <h1 class="text-4xl font-bold text-caramel">
+                Artisan Board
+            </h1>
+            <p class="text-cream opacity-70 mt-2">
+                Live Barista Task Queue
+            </p>
         </div>
 
-        {% if not task.completed %}
-        <a href="/complete/{{ task.id }}"
-           class="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">
-            Complete
-        </a>
-        {% else %}
-        <div class="px-4 py-2 rounded-xl bg-green-500/20 text-green-400 text-sm pulse-glow">
-            Done
-        </div>
-        {% endif %}
+        <button onclick="openModal()"
+                class="btn-coffee px-6 py-3">
+            + New Order
+        </button>
+
     </div>
-{% endfor %}
+
+    <!-- Orders Grid -->
+    <div id="ordersGrid"
+         class="grid sm:grid-cols-2 xl:grid-cols-3 gap-8 transition-opacity duration-400">
+
+        {% for order in orders %}
+        <div class="card p-6 flex flex-col justify-between hover:scale-[1.02]">
+
+            <div>
+                <h2 class="text-xl font-semibold text-cream">
+                    {{ order.name }}
+                </h2>
+
+                <p class="text-sm opacity-60 mt-1">
+                    {{ order.drink }}
+                </p>
+
+                <div class="mt-4 text-xs uppercase tracking-wide
+                    {% if order.status == 'Pending' %}
+                        text-yellow-400
+                    {% elif order.status == 'In Progress' %}
+                        text-blue-400
+                    {% else %}
+                        text-green-400
+                    {% endif %}
+                ">
+                    {{ order.status }}
+                </div>
+
+                <div class="mt-4 text-sm opacity-60">
+                    Brew Time:
+                    <span class="brewTimer font-semibold text-caramel">
+                        00:00
+                    </span>
+                </div>
+            </div>
+
+            <form method="POST"
+                  action="/update_status/{{ order.id }}"
+                  class="mt-6">
+
+                <button class="btn-coffee w-full py-3">
+                    Update Status
+                </button>
+
+            </form>
+
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="orderModal"
+     class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+
+    <div id="modalCard"
+         class="card p-8 w-full max-w-md scale-90 opacity-0 transition-all duration-300">
+
+        <h2 class="text-2xl font-bold text-caramel mb-6">
+            Create New Order ☕
+        </h2>
+
+        <form method="POST" action="/add_order" class="space-y-5">
+
+            <div>
+                <label class="text-sm opacity-70">Customer Name</label>
+                <input name="name"
+                       required
+                       class="w-full mt-2 px-3 py-2 rounded-xl bg-roast border border-white/10 focus:outline-none focus:border-caramel transition">
+            </div>
+
+            <div>
+                <label class="text-sm opacity-70">Drink</label>
+                <input name="drink"
+                       required
+                       class="w-full mt-2 px-3 py-2 rounded-xl bg-roast border border-white/10 focus:outline-none focus:border-caramel transition">
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button"
+                        onclick="closeModal()"
+                        class="w-1/2 border border-caramel rounded-xl py-2 hover:bg-caramel hover:text-espresso transition">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="btn-coffee w-1/2">
+                    Add Order
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"
+     class="fixed bottom-6 right-6 bg-caramel text-espresso px-6 py-3 rounded-xl shadow-lg opacity-0 translate-y-5 transition-all duration-500">
+    ☕ Order Added!
 </div>
 
 <script>
-let streak = localStorage.getItem("streak") || 0;
-document.getElementById("streakCount").innerText = streak;
 
-document.querySelectorAll("a[href*='/complete/']").forEach(btn => {
-    btn.addEventListener("click", () => {
-        streak++;
-        localStorage.setItem("streak", streak);
+/* Brew Timers */
+function startTimers(){
+    document.querySelectorAll(".brewTimer").forEach(timer=>{
+        if(timer.dataset.running) return;
+
+        timer.dataset.running = true;
+        let seconds = 0;
+
+        setInterval(()=>{
+            seconds++;
+            const mins = String(Math.floor(seconds/60)).padStart(2,'0');
+            const secs = String(seconds%60).padStart(2,'0');
+            timer.textContent = `${mins}:${secs}`;
+        },1000);
     });
-});
+}
+
+startTimers();
+
+/* Auto Refresh with Fade */
+setInterval(()=>{
+    const grid = document.querySelector("#ordersGrid");
+    grid.style.opacity = "0.4";
+
+    fetch(window.location.href)
+        .then(res=>res.text())
+        .then(html=>{
+            const parser=new DOMParser();
+            const doc=parser.parseFromString(html,"text/html");
+            const newGrid=doc.querySelector("#ordersGrid");
+
+            setTimeout(()=>{
+                grid.innerHTML=newGrid.innerHTML;
+                grid.style.opacity = "1";
+                startTimers();
+            },400);
+        });
+
+},20000);
+
+/* Modal */
+function openModal(){
+    const modal=document.getElementById("orderModal");
+    const card=document.getElementById("modalCard");
+
+    modal.classList.remove("hidden");
+    setTimeout(()=>{
+        card.classList.remove("scale-90","opacity-0");
+    },50);
+}
+
+function closeModal(){
+    const modal=document.getElementById("orderModal");
+    const card=document.getElementById("modalCard");
+
+    card.classList.add("scale-90","opacity-0");
+    setTimeout(()=>{
+        modal.classList.add("hidden");
+    },300);
+}
+
+/* Toast */
+function showToast(){
+    const toast=document.getElementById("toast");
+    toast.classList.remove("opacity-0","translate-y-5");
+    setTimeout(()=>{
+        toast.classList.add("opacity-0","translate-y-5");
+    },2500);
+}
+
+if(window.location.search.includes("added=true")){
+    showToast();
+}
+
 </script>
 
 {% endblock %}

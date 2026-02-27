@@ -1,21 +1,122 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="min-h-[80vh] flex flex-col justify-center items-center text-center space-y-10 fade-in">
+<!-- HERO SECTION -->
+<section class="min-h-[90vh] flex flex-col justify-center items-center text-center relative">
 
-    <h1 class="text-6xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
-        Driftwood
+    <h1 class="text-6xl md:text-7xl font-bold text-caramel mb-6 fade-in">
+        Driftwood Café
     </h1>
 
-    <p class="text-gray-400 text-xl max-w-2xl">
-        Premium productivity command center for modern digital teams.
+    <p class="max-w-2xl text-lg opacity-70 mb-10 fade-in" style="animation-delay:0.2s;">
+        Where craft meets calm.  
+        A modern barista workflow system designed for warmth, precision, and excellence.
     </p>
 
-    <a href="/login"
-       class="btn-primary px-10 py-5 rounded-2xl font-semibold">
-        Get Started
-    </a>
+    <div class="flex gap-6 fade-in" style="animation-delay:0.4s;">
+        <a href="/login"
+           class="btn-coffee px-10 py-4 text-lg">
+            Staff Login
+        </a>
 
-</div>
+        <a href="#about"
+           class="px-10 py-4 border border-caramel text-caramel rounded-xl hover:bg-caramel hover:text-espresso transition">
+            Discover
+        </a>
+    </div>
+
+</section>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="py-24">
+
+    <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-caramel mb-4">
+            Built for Modern Cafés
+        </h2>
+        <p class="opacity-70 max-w-xl mx-auto">
+            Driftwood Café OS streamlines your barista operations,
+            improves service flow, and enhances daily productivity —
+            all while maintaining the warmth of a true café experience.
+        </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-12">
+
+        <div class="card p-8 reveal">
+            <h3 class="text-xl font-semibold text-caramel mb-4">
+                Real-Time Order Flow
+            </h3>
+            <p class="opacity-70">
+                Baristas manage orders efficiently with a beautifully designed ticket board.
+            </p>
+        </div>
+
+        <div class="card p-8 reveal">
+            <h3 class="text-xl font-semibold text-caramel mb-4">
+                Manager Insights
+            </h3>
+            <p class="opacity-70">
+                Track service progress and daily productivity with elegant analytics.
+            </p>
+        </div>
+
+        <div class="card p-8 reveal">
+            <h3 class="text-xl font-semibold text-caramel mb-4">
+                Calm by Design
+            </h3>
+            <p class="opacity-70">
+                A warm interface crafted to feel like your café — not a corporate dashboard.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CTA SECTION -->
+<section class="py-24 text-center">
+
+    <div class="card p-16 max-w-3xl mx-auto">
+
+        <h2 class="text-4xl font-bold text-caramel mb-6">
+            Ready to Brew Better?
+        </h2>
+
+        <p class="opacity-70 mb-10">
+            Join the Driftwood experience and transform your café workflow.
+        </p>
+
+        <a href="/login"
+           class="btn-coffee px-12 py-4 text-lg">
+            Enter Café OS
+        </a>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="text-center py-10 opacity-50 text-sm">
+    © 2026 Driftwood Café · Crafted with care
+</footer>
+
+<!-- SCROLL REVEAL SCRIPT -->
+<script>
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll() {
+    reveals.forEach(el => {
+        const windowHeight = window.innerHeight;
+        const elementTop = el.getBoundingClientRect().top;
+
+        if (elementTop < windowHeight - 100) {
+            el.classList.add("fade-in");
+        }
+    });
+}
+
+window.addEventListener("scroll", revealOnScroll);
+</script>
 
 {% endblock %}
